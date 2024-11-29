@@ -148,4 +148,20 @@ export const getInvitationsList = async (walletAddress: string): Promise<Invitat
     console.error('获取邀请列表失败:', error);
     throw error;
   }
-}; 
+};
+
+export async function getInviterWalletByCode(inviteCode: string): Promise<string> {
+  try {
+    const inviteRef = doc(db, 'invitations', inviteCode);
+    const inviteDoc = await getDoc(inviteRef);
+    
+    if (!inviteDoc.exists()) {
+      throw new Error('Invalid invite code');
+    }
+    
+    return inviteDoc.data().wallet;
+  } catch (error) {
+    console.error('获取邀请人钱包地址失败:', error);
+    throw error;
+  }
+} 

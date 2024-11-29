@@ -3,6 +3,7 @@ import InviteHandler from '@/components/InviteHandler';
 import {NextIntlClientProvider} from 'next-intl';
 import {notFound} from 'next/navigation';
 import {Metadata} from 'next';
+import { Analytics } from "@vercel/analytics/react"
 import {getTranslations} from 'next-intl/server';
 import "../globals.css"
 
@@ -25,7 +26,13 @@ export async function generateMetadata({
     title: {
       template: `%s | ${t('site.name')}`,
       default: t('site.name'),
-    }
+    },
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 1,
+      userScalable: false,
+    },
   };
 }
 
@@ -43,15 +50,20 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <WalletProviders>
-            <InviteHandler>
-              {children}
-            </InviteHandler>
-          </WalletProviders>
-        </NextIntlClientProvider>
+    <html lang={locale} suppressHydrationWarning className="h-full">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=0.7, maximum-scale=0.7, user-scalable=0" />
+      </head>
+      <body className="min-h-screen h-full w-full bg-black text-white overflow-x-hidden">
+        <div className="flex flex-col min-h-screen bg-gradient-to-b from-purple-900/20 to-blue-900/20">
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <WalletProviders>
+              <InviteHandler>
+                {children}
+              </InviteHandler>
+            </WalletProviders>
+          </NextIntlClientProvider>
+        </div>
       </body>
     </html>
   );

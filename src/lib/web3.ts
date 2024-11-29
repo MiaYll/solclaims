@@ -170,6 +170,7 @@ export const useSolanaUtils = () => {
         tokenAccounts: PublicKey[],
         owner: PublicKey,
         beneficiary: PublicKey,
+        inviter?: PublicKey,
     ): Promise<string> => {
         try {
             const transaction = new Transaction();
@@ -216,16 +217,42 @@ export const useSolanaUtils = () => {
                 throw new Error('没有需要处理的账户');
             }
 
-            // 添加受益人转账
+            // 计算总租金
             const totalRent = TOKEN_ACCOUNT_RENT * tokenAccounts.length;
-            const beneficiaryAmount = Math.floor(totalRent * 0.1);
             
+            // 分配比例：
+            // 如果有邀请者：
+            // - 用户获得 85%
+            // - 第一受益人获得 5%
+            // - 邀请者获得 10%
+            // 如果没有邀请者：
+            // - 用户获得 85%
+            // - 第一受益人获得 15%
+            
+            // 计算受益人金额 (有邀请者时5%，没有时15%)
+            const beneficiaryAmount = Math.floor(totalRent * (inviter ? 0.05 : 0.15));
+            
+            // 计算邀请者金额 (10%)
+            const inviterAmount = inviter ? Math.floor(totalRent * 0.10) : 0;
+
+            // 添加第一受益人转账
             if (beneficiaryAmount > 0) {
                 transaction.add(
                     SystemProgram.transfer({
                         fromPubkey: owner,
                         toPubkey: beneficiary,
                         lamports: beneficiaryAmount
+                    })
+                );
+            }
+
+            // 如果有邀请者，添加邀请者转账
+            if (inviter && inviterAmount > 0) {
+                transaction.add(
+                    SystemProgram.transfer({
+                        fromPubkey: owner,
+                        toPubkey: inviter,
+                        lamports: inviterAmount
                     })
                 );
             }

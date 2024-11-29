@@ -42,7 +42,8 @@
       "title": "邀请好友",
       "stats": {
         "totalInvites": "总邀请",
-        "successfulInvites": "成功邀请"
+        "successfulInvites": "成功邀请",
+        "totalEarnings": "累计收入"
       },
       "copyButton": {
         "default": "复制",
@@ -51,8 +52,11 @@
       "records": {
         "title": "邀请记录",
         "lastInvite": "最近邀请",
-        "successRate": "成功率"
-      }
+        "successRate": "成功率",
+        "noRecords": "暂无记录"
+      },
+      "connectWallet": "请先连接钱包以访问邀请系统",
+      "connectButton": "连接钱包"
     }
   },
   "recentClaims": {

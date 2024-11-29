@@ -42,7 +42,8 @@
       "title": "Invite Friends",
       "stats": {
         "totalInvites": "Total Invites",
-        "successfulInvites": "Successful Invites"
+        "successfulInvites": "Successful Invites",
+        "totalEarnings": "Total Earnings"
       },
       "copyButton": {
         "default": "Copy",
@@ -51,8 +52,11 @@
       "records": {
         "title": "Invitation Records",
         "lastInvite": "Last Invite",
-        "successRate": "Success Rate"
-      }
+        "successRate": "Success Rate",
+        "noRecords": "No records yet"
+      },
+      "connectWallet": "Please connect your wallet first to access the invitation system",
+      "connectButton": "Connect Wallet"
     }
   },
   "latestRecords": {
