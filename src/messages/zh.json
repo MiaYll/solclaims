@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "site": {
+      "name": "Sol Claims"
+    }
+  },
+  "nav": {
+    "balance": "余额: {balance} SOL"
+  },
+  "hero": {
+    "title": "清理你的 Solana 钱包",
+    "subtitle": "关闭空代币账户，收回你的 SOL"
+  },
+  "tokens": {
+    "title": "你的代币列表",
+    "emptyWallet": "未找到代币",
+    "switchWallet": "请连接钱包或切换到其他钱包"
+  },
+  "buttons": {
+    "cleanup": "清理",
+    "referral": "开始邀请"
+  },
+  "invitation": {
+    "title": "推荐奖励计划",
+    "subtitle": "邀请好友加入并赚取额外奖励。您将获得好友清理收益的10%，且不会影响他们的奖励。",
+    "card1": {
+      "title": "邀请好友",
+      "description": "分享您的专属邀请链接，让更多朋友加入我们的平台，共同获得收益。"
+    },
+    "card2": {
+      "title": "10% 额外收益",
+      "description": "获得被邀请用户清理收益的10%作为奖励，完全不影响被邀请者的收益。"
+    },
+    "card3": {
+      "title": "无限增长",
+      "description": "邀请人数不设上限，邀请越多收益越高，让您的收益持续增长。"
+    },
+    "startButton": "开始邀请"
+  },
+  "modal": {
+    "invite": {
+      "title": "邀请好友",
+      "stats": {
+        "totalInvites": "总邀请",
+        "successfulInvites": "成功邀请"
+      },
+      "copyButton": {
+        "default": "复制",
+        "copied": "已复制"
+      },
+      "records": {
+        "title": "邀请记录",
+        "lastInvite": "最近邀请",
+        "successRate": "成功率"
+      }
+    }
+  },
+  "recentClaims": {
+    "title": "最新清理记录"
+  },
+  "howItWorks": {
+    "title": "如何使用？",
+    "section1": {
+      "title": "关闭 SPL 代币账户",
+      "content": "您钱包中的每个 SPL 代币账户都需要支付 SOL 租金。通过关闭空账户，您可以收回这些 SOL。"
+    },
+    "section2": {
+      "title": "获取 SOL",
+      "content": "当您关闭代币账户时，租金（每个账户约 0.002 SOL）将返还到您的钱包。"
+    },
+    "section3": {
+      "title": "什么是租金？",
+      "content": "在 Solana 上，存储数据需要支付 SOL 租金。代币账户每个需要约 0.002 SOL 才能保持开启。"
+    }
+  }
+} 

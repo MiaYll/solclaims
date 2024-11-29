@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "site": {
+      "name": "Sol Claims"
+    }
+  },
+  "nav": {
+    "balance": "Balance: {balance} SOL"
+  },
+  "hero": {
+    "title": "Clean Up Your Solana Wallet",
+    "subtitle": "Close empty token accounts and reclaim your SOL"
+  },
+  "tokens": {
+    "title": "Your Token List",
+    "emptyWallet": "No tokens found",
+    "switchWallet": "Connect your wallet or switch to a different one"
+  },
+  "buttons": {
+    "cleanup": "CLEANUP",
+    "referral": "Start Inviting"
+  },
+  "invitation": {
+    "title": "Referral Rewards Program",
+    "subtitle": "Invite friends to join and earn extra rewards. You'll receive 10% of your referrals' cleanup earnings without affecting their rewards.",
+    "card1": {
+      "title": "Invite Friends",
+      "description": "Share your unique invitation link and let more friends join our platform to earn together."
+    },
+    "card2": {
+      "title": "10% Extra Earnings",
+      "description": "Receive 10% of your referrals' cleanup earnings as rewards, without affecting their earnings."
+    },
+    "card3": {
+      "title": "Unlimited Growth",
+      "description": "No limit on referrals, the more you invite, the more you earn. Let your earnings grow continuously."
+    },
+    "startButton": "Start Inviting"
+  },
+  "modal": {
+    "invite": {
+      "title": "Invite Friends",
+      "stats": {
+        "totalInvites": "Total Invites",
+        "successfulInvites": "Successful Invites"
+      },
+      "copyButton": {
+        "default": "Copy",
+        "copied": "Copied"
+      },
+      "records": {
+        "title": "Invitation Records",
+        "lastInvite": "Last Invite",
+        "successRate": "Success Rate"
+      }
+    }
+  },
+  "latestRecords": {
+    "title": "Latest Cleanup Records"
+  },
+  "howToUse": {
+    "title": "How to Use?",
+    "section1": {
+      "title": "Close SPL Token Accounts",
+      "content": "Select the token accounts you want to close. Each closed account will return about 0.002 SOL."
+    },
+    "section2": {
+      "title": "Get SOL Back",
+      "content": "After closing, you'll receive 90% of the rent, and we'll keep 10% as a service fee."
+    },
+    "section3": {
+      "title": "What is Rent?",
+      "content": "On Solana, each token account requires a small amount of SOL as rent. When you close these accounts, you can reclaim this SOL."
+    }
+  }
+} 
