@@ -123,6 +123,7 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                 </div>
               </div>
 
+
               {inviteCode && (
                 <div className="flex gap-2">
                   <input
