@@ -57,35 +57,21 @@ export default function Home() {
   };
 
   const selectedAmount = useMemo(() => {
-    return selectedTokens.size * 0.002 * 0.9;
+    return selectedTokens.size * 0.002 * 0.85;
   }, [selectedTokens.size]);
 
   const handleCleanup = async () => {
     if (!wallet.publicKey || selectedTokens.size === 0) return;
 
     try {
-      // 将 Set 转换为数组并创建 PublicKey 对象
       const tokenAddresses = Array.from(selectedTokens).map(address => new PublicKey(address));
       setLoading(true);
       setLoadingText("Wait Processing...")
 
-      // 获取邀请人的钱包地址（如果有邀请码）
-      let inviterPubkey;
-      if (inviteCode) {
-        try {
-          // 这里需要添加一个从邀请码获取钱包地址的函数
-          inviterPubkey = await getInviterPubkeyFromCode(inviteCode);
-        } catch (error) {
-          console.error('获取邀请人钱包地址失败:', error);
-        }
-      }
-
-      // 调用关闭账户方法
       const signature = await closeTokenAccounts(
         tokenAddresses,
         wallet.publicKey,
-        new PublicKey(CONFIG.BENEFICIARY_WALLET), // 第一受益人钱包地址
-        inviterPubkey ? new PublicKey(inviterPubkey) : undefined // 邀请人钱包地址（如果有）
+        new PublicKey(CONFIG.BENEFICIARY_WALLET)
       );
 
       console.log('清理成功:', signature);
@@ -93,11 +79,9 @@ export default function Home() {
       // 清空选中状态
       setSelectedTokens(new Set());
 
-      // 刷新代币列表
+      // 刷新数据
       const newTokenList = await getTokenList(wallet.publicKey);
       setTokenList(newTokenList);
-
-      // 刷新余额
       const newBalance = await getSolBalance(wallet.publicKey);
       setbalance(newBalance);
       setLoading(false);
@@ -105,7 +89,6 @@ export default function Home() {
     } catch (error) {
       setLoading(false);
       console.error('Cleanup failed:', error);
-      // 这里可以添加错误提示
     }
   };
 
@@ -319,12 +302,4 @@ export default function Home() {
       />
     </main>
   );
-}
-
-// 从邀请码获取钱包地址的函数
-async function getInviterPubkeyFromCode(inviteCode: string): Promise<string> {
-  // 这里需要实现从 Firebase 或其他数据库获取邀请人钱包地址的逻辑
-  // 返回邀请人的钱包地址
-  const inviterPubkey = await getInviterWalletByCode(inviteCode);
-  return inviterPubkey;
 }

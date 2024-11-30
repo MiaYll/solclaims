@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { completeInvitation } from '@/lib/firebase/invitation';
+import { checkIsNewUser, completeInvitation } from '@/lib/firebase/invitation';
 
 const INVITE_CODE_KEY = 'pending_invite_code';
 
@@ -23,6 +23,13 @@ export default function InviteHandler({
       // 先检查 URL 中的 ref 参数
       const refCode = searchParams.get('ref');
       if (refCode) {
+        // 检查是否是新用户
+        const isNewUser = await checkIsNewUser(publicKey.toString());
+        if (!isNewUser) {
+          console.warn('非新用户不能使用邀请码');
+          return;
+        }
+
         // 存储到 localStorage
         localStorage.setItem(INVITE_CODE_KEY, refCode);
         // 清理 URL，保持当前路径
@@ -36,6 +43,14 @@ export default function InviteHandler({
       if (!savedRefCode) return;
 
       try {
+        // 再次检查是否是新用户
+        const isNewUser = await checkIsNewUser(publicKey.toString());
+        if (!isNewUser) {
+          console.warn('非新用户不能使用邀请码');
+          localStorage.removeItem(INVITE_CODE_KEY);
+          return;
+        }
+
         await completeInvitation(savedRefCode, publicKey.toString());
         // 处理完成后清除存储的邀请码
         localStorage.removeItem(INVITE_CODE_KEY);

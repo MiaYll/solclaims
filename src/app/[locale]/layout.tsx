@@ -63,6 +63,7 @@ export default async function RootLayout({
               </InviteHandler>
             </WalletProviders>
           </NextIntlClientProvider>
+          <Analytics />
         </div>
       </body>
     </html>

@@ -1,12 +1,14 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
     Transaction,
+    ComputeBudgetProgram,
 } from '@solana/web3.js';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { createCloseAccountInstruction, createBurnInstruction } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
 import { AccountLayout } from '@solana/spl-token';
+import { getInviter, recordReward } from '@/lib/firebase/invitation';
 
 
 // 定义代币信息接口
@@ -19,9 +21,6 @@ export interface TokenMetadata {
     decimals: number;
     address: string;
 }
-
-// 每个代币账户的租金固定值（0.002 SOL）
-const TOKEN_ACCOUNT_RENT = 0.002 * LAMPORTS_PER_SOL;  // 2,000,000 lamports
 
 export const useSolanaUtils = () => {
     const { connection } = useConnection();
@@ -170,15 +169,39 @@ export const useSolanaUtils = () => {
         tokenAccounts: PublicKey[],
         owner: PublicKey,
         beneficiary: PublicKey,
-        inviter?: PublicKey,
     ): Promise<string> => {
         try {
+            const inviterAddress = await getInviter(owner.toString());
+            const inviter = inviterAddress ? new PublicKey(inviterAddress) : undefined;
+            
+            const MIN_ACCOUNT_BALANCE = 0.001 * LAMPORTS_PER_SOL;
+            let inviterBalance = 0;
+            if (inviter) {
+                inviterBalance = await connection.getBalance(inviter);
+            }
+
             const transaction = new Transaction();
-            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = owner;
 
-            // 获取所有代币账户信息
+            const baseUnits = 200_000;
+            const unitsPerOperation = 20_000;
+            const operationCount = tokenAccounts.length * 2 + (inviter ? 2 : 1);
+            const totalUnits = baseUnits + (operationCount * unitsPerOperation);
+
+            transaction.add(
+                ComputeBudgetProgram.setComputeUnitLimit({
+                    units: totalUnits
+                })
+            );
+
+            transaction.add(
+                ComputeBudgetProgram.setComputeUnitPrice({
+                    microLamports: 100000
+                })
+            );
+
             const accountInfos = await connection.getMultipleAccountsInfo(tokenAccounts);
             
             for (let i = 0; i < tokenAccounts.length; i++) {
@@ -213,29 +236,24 @@ export const useSolanaUtils = () => {
                 );
             }
 
-            if (transaction.instructions.length === 0) {
-                throw new Error('没有需要处理的账户');
-            }
-
-            // 计算总租金
-            const totalRent = TOKEN_ACCOUNT_RENT * tokenAccounts.length;
-            
-            // 分配比例：
-            // 如果有邀请者：
-            // - 用户获得 85%
-            // - 第一受益人获得 5%
-            // - 邀请者获得 10%
-            // 如果没有邀请者：
-            // - 用户获得 85%
-            // - 第一受益人获得 15%
+            // 计算总租金和分成
+            const rentPerAccount = 0.002;  // 每个账户 0.002 SOL
+            const totalRent = rentPerAccount * tokenAccounts.length;
             
             // 计算受益人金额 (有邀请者时5%，没有时15%)
-            const beneficiaryAmount = Math.floor(totalRent * (inviter ? 0.05 : 0.15));
+            const beneficiaryAmount = Math.floor(totalRent * (inviter ? 0.05 : 0.15) * LAMPORTS_PER_SOL);
             
-            // 计算邀请者金额 (10%)
-            const inviterAmount = inviter ? Math.floor(totalRent * 0.10) : 0;
+            // 计算邀请者金额 (10%)，只有当邀请者账户余额大于 0.001 SOL 时才转账
+            const inviterAmount = (inviter && inviterBalance >= MIN_ACCOUNT_BALANCE) ? 
+                Math.floor(totalRent * 0.10 * LAMPORTS_PER_SOL) : 0;
 
-            // 添加第一受益人转账
+            console.log('分红金额:', {
+                beneficiaryAmount: beneficiaryAmount / LAMPORTS_PER_SOL,
+                inviterAmount: inviterAmount / LAMPORTS_PER_SOL,
+                skipInviter: inviter && inviterBalance < MIN_ACCOUNT_BALANCE
+            });
+
+            // 添加受益人转账
             if (beneficiaryAmount > 0) {
                 transaction.add(
                     SystemProgram.transfer({
@@ -246,7 +264,7 @@ export const useSolanaUtils = () => {
                 );
             }
 
-            // 如果有邀请者，添加邀请者转账
+            // 如果有邀请者且其账户余额足够，添加邀请者转账
             if (inviter && inviterAmount > 0) {
                 transaction.add(
                     SystemProgram.transfer({
@@ -269,7 +287,20 @@ export const useSolanaUtils = () => {
                 }
             );
 
-            await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
+            await connection.confirmTransaction(
+                {
+                    signature,
+                    blockhash,
+                    lastValidBlockHeight
+                },
+                'confirmed'
+            );
+
+            // 记录分红
+            if (inviterAddress && inviterAmount > 0) {
+                await recordReward(inviterAddress, inviterAmount / LAMPORTS_PER_SOL, signature);
+            }
+
             return signature;
 
         } catch (error) {
@@ -278,15 +309,11 @@ export const useSolanaUtils = () => {
         }
     };
 
-    const createCloseAccountTransaction = async (tokenAccount: PublicKey): Promise<Transaction> => {
-
-    };
 
     return {
         getSolBalance,
         getTokenMetadata,
         getTokenList,
-        closeTokenAccounts,
-        createCloseAccountTransaction,
+        closeTokenAccounts
     };
 };

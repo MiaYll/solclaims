@@ -39,28 +39,27 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
   const t = useTranslations();
 
   useEffect(() => {
-    if (publicKey) {
+    if (publicKey && isOpen) {
       loadData();
     }
-  }, [publicKey]);
+  }, [publicKey, isOpen]);
 
   const loadData = async () => {
     if (!publicKey) return;
     setLoading(true);
     try {
-      const [stats, existingCode] = await Promise.all([
-        getInviteStats(publicKey.toString()),
-        getInviteCode(publicKey.toString())
-      ]);
-      
-      setStats(stats);
-      
+      const existingCode = await getInviteCode(publicKey.toString());
       if (existingCode) {
         setInviteCode(existingCode);
       } else {
         const newCode = await createInvitation(publicKey.toString());
         setInviteCode(newCode);
       }
+
+      const freshStats = await getInviteStats(publicKey.toString());
+      
+      setStats(freshStats);
+      
     } catch (error) {
       console.error('加载数据失败:', error);
     } finally {
@@ -108,17 +107,19 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gray-800 rounded-lg border border-gray-700">
-                  <p className="text-lg font-semibold text-purple-400">{stats?.totalInvites || 0}</p>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="text-center p-6 bg-gray-800 rounded-lg border border-gray-700">
+                  <p className="text-2xl font-semibold text-purple-400 mb-2">
+                    {stats?.totalInvites ?? 0}
+                  </p>
                   <p className="text-sm text-gray-400">{t('modal.invite.stats.totalInvites')}</p>
                 </div>
-                <div className="text-center p-4 bg-gray-800 rounded-lg border border-gray-700">
-                  <p className="text-lg font-semibold text-purple-400">{stats?.successfulInvites || 0}</p>
-                  <p className="text-sm text-gray-400">{t('modal.invite.stats.successfulInvites')}</p>
-                </div>
-                <div className="text-center p-4 bg-gray-800 rounded-lg border border-gray-700">
-                  <p className="text-lg font-semibold text-purple-400">{stats?.totalEarnings?.toFixed(4) || '0'} SOL</p>
+                <div className="text-center p-6 bg-gray-800 rounded-lg border border-gray-700">
+                  <p className="text-2xl font-semibold text-purple-400 mb-2">
+                    {typeof stats?.totalRewards === 'number' 
+                      ? `${stats.totalRewards.toFixed(4)} SOL` 
+                      : '0 SOL'}
+                  </p>
                   <p className="text-sm text-gray-400">{t('modal.invite.stats.totalEarnings')}</p>
                 </div>
               </div>

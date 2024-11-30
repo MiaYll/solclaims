@@ -59,10 +59,10 @@
       "connectButton": "连接钱包"
     }
   },
-  "recentClaims": {
-    "title": "最新清理记录"
+  "latestRecords": {
+    "title": "最新记录"
   },
-  "howItWorks": {
+  "howToUse": {
     "title": "如何使用？",
     "section1": {
       "title": "关闭 SPL 代币账户",
