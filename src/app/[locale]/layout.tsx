@@ -67,7 +67,6 @@ export default async function RootLayout({
         <meta property="og:title" content={seoMessages.title} />
         <meta property="og:description" content={seoMessages.description} />
         <meta property="og:image" content={seoMessages.image} />
-        <meta property="og:url" content={window.location.href} />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
