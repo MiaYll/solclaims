@@ -103,7 +103,7 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <Image
                 src="https://claimyoursol.com/images/cys-banner-alt.png"
-                alt="ClaimYourSol Logo"
+                alt="solclaims Logo"
                 width={32}
                 height={32}
                 className="rounded-full"
